@@ -23,7 +23,7 @@ Ensure you have **Python 3.9+** and **pip** installed.
 
 ### Clone the Repository
 ```sh
-git clone https://github.com/yourusername/library-management.git
+git clone https://github.com/thatsimo/library_management.git
 cd library-management
 ```
 
@@ -93,16 +93,6 @@ Run the tests using:
 ```sh
 python manage.py test
 ```
-
-## Design Pattern: Decorator (Gang of Four)
-This project uses the **Decorator Pattern** to enforce authentication before allowing book borrowing or returning.
-
-- `IBookOperation`: Interface for book operations
-- `BasicBookOperation`: Concrete implementation of borrowing/returning books
-- `AuthenticatedBookOperationDecorator`: Adds authentication checks before performing the book operations
-
-## Deployment
-To deploy on **Heroku**, **AWS**, or **Docker**, modify `settings.py` accordingly and follow respective deployment guides.
 
 ## License
 MIT License. Feel free to use and modify.
