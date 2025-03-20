@@ -1,5 +1,7 @@
-.venv
+**/.venv
 **/__pycache__
 *.sqlite3
 .vscode
-.env
+**/.env
+**/node_modules
+**/dist
