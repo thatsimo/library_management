@@ -23,7 +23,7 @@ This is a Django + React application for a simplified Library Management System.
 ### Clone the Repository
 ```sh
 git clone https://github.com/thatsimo/library_management.git
-cd library-management
+cd library_management
 ```
 
 Follow instructions inside `core` and `app` folders
