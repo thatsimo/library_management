@@ -15,6 +15,10 @@ class PrintedBookSerializer(BaseBookSerializer):
     def validate(self, data):
         if data.get("book_type") != "printed":
             raise serializers.ValidationError("Invalid book type for PrintedBookSerializer.")
+        if not data.get("pages"):
+            raise serializers.ValidationError("Pages is required for printed books.")
+        if data.get("pages") <= 0:
+            raise serializers.ValidationError("Pages must be a positive integer.")
         return data
 
 class EbookSerializer(BaseBookSerializer):
@@ -23,6 +27,8 @@ class EbookSerializer(BaseBookSerializer):
     def validate(self, data):
         if data.get("book_type") != "ebook":
             raise serializers.ValidationError("Invalid book type for EbookSerializer.")
+        if not data.get("file_format"):
+            raise serializers.ValidationError("File format is required for ebooks.")
         return data
 
 class AudiobookSerializer(BaseBookSerializer):
@@ -31,6 +37,10 @@ class AudiobookSerializer(BaseBookSerializer):
     def validate(self, data):
         if data.get("book_type") != "audiobook":
             raise serializers.ValidationError("Invalid book type for AudiobookSerializer.")
+        if not data.get("duration"):
+            raise serializers.ValidationError("Duration is required for audiobooks.")
+        if data.get("duration") <= 0:
+            raise serializers.ValidationError("Duration must be a positive integer.")
         return data
 
 
@@ -87,7 +97,11 @@ class BookSerializer(serializers.ModelSerializer):
 
         # Use factory to get the appropriate serializer
         book_type = validated_data.get("book_type")
-        serializer = BookSerializerFactory.get_serializer(book_type, instance, data=validated_data, partial=True)
+        if book_type:
+            serializer = BookSerializerFactory.get_serializer(book_type, instance, data=validated_data, partial=True)
+        else:
+            serializer = BaseBookSerializer(instance, data=validated_data, partial=True)
+        
         serializer.is_valid(raise_exception=True)
 
         return serializer.save()
