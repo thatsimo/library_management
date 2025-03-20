@@ -1,6 +1,9 @@
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.views import APIView
+from .decorator import can_borrow_and_return
+from rest_framework.generics import get_object_or_404
 from .models import Book
 from .serializers import BookSerializer
 from .permissions import IsAdminOrReadOnly, IsUserOrReadOnly
@@ -39,9 +42,10 @@ class BookViewSet(viewsets.ModelViewSet):
         book = self.get_object()
         operation = BasicBookOperation()
         return operation.borrow(book, request.user)
-
-    @action(detail=True, methods=['post'], permission_classes=[IsUserOrReadOnly])
-    def return_book(self, request, pk=None):
-        book = self.get_object()
+    
+class ReturnBookViewSet(APIView):
+    @can_borrow_and_return
+    def post(self, request, pk=None):
+        book = get_object_or_404(Book, pk=pk)
         operation = BasicBookOperation()
         return operation.return_book(book, request.user)
