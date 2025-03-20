@@ -7,12 +7,16 @@ import { useAuth } from "../contexts/auth-context"
 import { getBooks } from "../services/api"
 import { Button } from "../components/ui/button"
 import { Input } from "../components/ui/input"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../components/ui/card"
+import {
+  Card,
+  CardFooter, CardHeader, CardTitle
+} from "../components/ui/card"
 import { Badge } from "../components/ui/badge"
 import { Loader2, Plus, Search, BookOpen } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
 import { MainNav } from "../components/main-nav"
 import { useQuery } from "@tanstack/react-query"
+import { CardBookDetailContent } from "@/components/card-book-detail-content"
 
 export function DashboardPage() {
   const [searchQuery, setSearchQuery] = useState("")
@@ -81,22 +85,7 @@ export function DashboardPage() {
                       <CardHeader className="pb-2">
                         <CardTitle className="line-clamp-1">{book.title}</CardTitle>
                       </CardHeader>
-                      <CardContent>
-                        <div className="space-y-2">
-                          <div className="text-sm">
-                            <span className="text-muted-foreground">Author: </span>
-                            {book.author}
-                          </div>
-                          <div className="text-sm">
-                            <span className="text-muted-foreground">ISBN: </span>
-                            {book.isbn}
-                          </div>
-                          <div className="text-sm">
-                            <span className="text-muted-foreground">Published: </span>
-                            {new Date(book.published_date).toLocaleDateString()}
-                          </div>
-                        </div>
-                      </CardContent>
+                      <CardBookDetailContent book={book} />
                       <CardFooter>
                         <Badge variant={book.available ? "default" : "destructive"}>
                           {book.available ? "Available" : "Borrowed"}

@@ -128,7 +128,7 @@ export function BookDetailsPage() {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-2xl">{book.title}</CardTitle>
-                  <Badge variant={book.available ? "outline" : "secondary"}>
+                  <Badge variant={book.available ? "default" : "destructive"}>
                     {book.available ? "Available" : "Borrowed"}
                   </Badge>
                 </div>
@@ -147,6 +147,29 @@ export function BookDetailsPage() {
                     <h3 className="font-medium text-muted-foreground">Published Date</h3>
                     <p>{new Date(book.published_date).toLocaleDateString()}</p>
                   </div>
+                  <div>
+                    <h3 className="font-medium text-muted-foreground">Type</h3>
+                    <p>{book.book_type}</p>
+                  </div>
+
+                  {book.duration && (
+                    <div>
+                      <h3 className="font-medium text-muted-foreground">Duration</h3>
+                      <p>{book.duration}</p>
+                    </div>
+                  )}
+                  {book.file_format && (
+                    <div>
+                      <h3 className="font-medium text-muted-foreground">File Format</h3>
+                      <p>{book.file_format}</p>
+                    </div>
+                  )}
+                  {book.pages && (
+                    <div>
+                      <h3 className="font-medium text-muted-foreground">Pages</h3>
+                      <p>{book.pages}</p>
+                    </div>
+                  )}
                 </div>
               </CardContent>
               <CardFooter className="flex flex-wrap gap-2">

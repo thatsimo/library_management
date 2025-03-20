@@ -3,12 +3,13 @@
 import { useAuth } from "../contexts/auth-context"
 import { getBooks, returnBook } from "../services/api"
 import { Button } from "../components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../components/ui/card"
+import { Card, CardFooter, CardHeader, CardTitle } from "../components/ui/card"
 import { Loader2, BookOpen } from "lucide-react"
 import { Link } from "react-router-dom"
 import { MainNav } from "../components/main-nav"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
+import { CardBookDetailContent } from "@/components/card-book-detail-content"
 
 export function MyBooksPage() {
   const { token, user } = useAuth()
@@ -64,22 +65,7 @@ export function MyBooksPage() {
                     <CardHeader className="pb-2">
                       <CardTitle className="line-clamp-1">{book.title}</CardTitle>
                     </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2">
-                        <div className="text-sm">
-                          <span className="text-muted-foreground">Author: </span>
-                          {book.author}
-                        </div>
-                        <div className="text-sm">
-                          <span className="text-muted-foreground">ISBN: </span>
-                          {book.isbn}
-                        </div>
-                        <div className="text-sm">
-                          <span className="text-muted-foreground">Published: </span>
-                          {new Date(book.published_date).toLocaleDateString()}
-                        </div>
-                      </div>
-                    </CardContent>
+                    <CardBookDetailContent book={book} />
                     <CardFooter className="flex justify-between">
                       <Button variant="outline" asChild>
                         <Link to={`/books/${book.id}`}>View Details</Link>

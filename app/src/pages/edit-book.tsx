@@ -1,21 +1,17 @@
 "use client"
 
-import type React from "react"
-
 import { useState } from "react"
 import { useAuth } from "../contexts/auth-context"
 import { getBook, updateBook } from "../services/api"
 import type { BookFormData } from "../services/api"
 import { Button } from "../components/ui/button"
-import { Input } from "../components/ui/input"
-import { Label } from "../components/ui/label"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../components/ui/card"
-import { Checkbox } from "../components/ui/checkbox"
+import { Card, CardHeader, CardTitle } from "../components/ui/card"
 import { Loader2, ArrowLeft } from "lucide-react"
 import { useNavigate, useParams } from "react-router-dom"
 import { MainNav } from "../components/main-nav"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
+import { CardBookFormContent } from "@/components/card-book-form-content"
 
 export function EditBookPage() {
   const { token } = useAuth()
@@ -24,23 +20,24 @@ export function EditBookPage() {
   const bookId = Number.parseInt(id!)
   const queryClient = useQueryClient()
 
-  // Fetch book details
   const { data: book, isLoading } = useQuery({
     queryKey: ["book", bookId],
     queryFn: () => getBook(token!, bookId),
     enabled: !!token && !!bookId,
   })
 
-  // Initialize form data from book data
   const [formData, setFormData] = useState<BookFormData>({
     title: book?.title || "",
     author: book?.author || "",
     isbn: book?.isbn || "",
     published_date: book?.published_date?.split("T")[0] || new Date().toISOString().split("T")[0],
     available: book?.available ?? true,
+    book_type: book?.book_type || "printed", // Default to printed
+    pages: book?.pages || undefined,
+    duration: book?.duration || undefined,
+    file_format: book?.file_format || undefined,
   })
 
-  // Update form data when book data is loaded
   useState(() => {
     if (book) {
       setFormData({
@@ -49,11 +46,14 @@ export function EditBookPage() {
         isbn: book.isbn,
         published_date: book.published_date.split("T")[0],
         available: book.available,
+        book_type: book.book_type || "printed",
+        pages: book.pages || undefined,
+        duration: book.duration || undefined,
+        file_format: book.file_format || undefined,
       })
     }
   })
 
-  // Update book mutation
   const updateMutation = useMutation({
     mutationFn: (data: BookFormData) => updateBook(token!, bookId, data),
     onSuccess: () => {
@@ -66,19 +66,6 @@ export function EditBookPage() {
       toast(error.message || "Failed to update book")
     },
   })
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }))
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    updateMutation.mutate(formData)
-  }
 
   if (isLoading) {
     return (
@@ -110,54 +97,11 @@ export function EditBookPage() {
               <CardHeader>
                 <CardTitle>Edit Book</CardTitle>
               </CardHeader>
-              <form onSubmit={handleSubmit}>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="title">Title</Label>
-                    <Input id="title" name="title" value={formData.title} onChange={handleChange} required />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="author">Author</Label>
-                    <Input id="author" name="author" value={formData.author} onChange={handleChange} required />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="isbn">ISBN</Label>
-                    <Input id="isbn" name="isbn" value={formData.isbn} onChange={handleChange} required />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="published_date">Published Date</Label>
-                    <Input
-                      id="published_date"
-                      name="published_date"
-                      type="date"
-                      value={formData.published_date}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="available"
-                      name="available"
-                      checked={formData.available}
-                      onCheckedChange={(checked) => setFormData((prev) => ({ ...prev, available: checked === true }))}
-                    />
-                    <Label htmlFor="available">Available for borrowing</Label>
-                  </div>
-                </CardContent>
-                <CardFooter>
-                  <Button type="submit" disabled={updateMutation.isPending}>
-                    {updateMutation.isPending ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Saving...
-                      </>
-                    ) : (
-                      "Save Changes"
-                    )}
-                  </Button>
-                </CardFooter>
-              </form>
+              <CardBookFormContent
+                mutation={updateMutation}
+                formData={formData}
+                setFormData={setFormData}
+              />
             </Card>
           </div>
         </main>
@@ -165,4 +109,3 @@ export function EditBookPage() {
     </div>
   )
 }
-

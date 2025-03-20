@@ -5,6 +5,10 @@ export type Book = {
   title: string
   author: string
   isbn: string
+  book_type: string,
+  file_format?: string,
+  duration?: string,
+  pages?: number,
   published_date: string
   available: boolean
   borrowed_by?: number
