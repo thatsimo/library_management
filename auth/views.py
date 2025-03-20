@@ -49,6 +49,7 @@ class MeView(APIView):
         user = request.user
         user_data = {
             'username': user.username,
-            'is_staff': user.is_staff
+            'is_staff': user.is_staff,
+            'id': user.id
         }
         return Response(user_data, status=status.HTTP_200_OK)
