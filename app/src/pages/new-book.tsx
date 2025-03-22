@@ -1,4 +1,3 @@
-import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
@@ -16,19 +15,7 @@ export function NewBookPage() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
 
-  const [formData, setFormData] = useState<BookFormData>({
-    title: "",
-    author: "",
-    isbn: "",
-    published_date: new Date().toISOString().split("T")[0],
-    available: true,
-    book_type: "printed", // Default to printed
-    pages: undefined,
-    duration: undefined,
-    file_format: undefined,
-  })
-
-  const createMutation = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: (data: BookFormData) => createBook(token!, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["books"] })
@@ -54,9 +41,8 @@ export function NewBookPage() {
                 <CardTitle>Add Book</CardTitle>
               </CardHeader>
               <CardBookFormContent
-                mutation={createMutation}
-                formData={formData}
-                setFormData={setFormData}
+                mutate={mutate}
+                isLoading={isPending}
               />
             </Card>
           </div>

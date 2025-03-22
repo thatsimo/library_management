@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react"
+import React, { useState } from "react"
 import { Button } from "./ui/button"
 import { Input } from "./ui/input"
 import { Label } from "./ui/label"
@@ -15,17 +15,29 @@ import {
     SelectContent,
 } from "./ui/select"
 import { Book, BookFormData } from "@/services/api"
-import { UseMutationResult } from "@tanstack/react-query"
+import { UseMutateFunction } from "@tanstack/react-query"
 
 interface CardBookFormContentProps {
-    mutation: UseMutationResult<Book, Error, BookFormData>
-    formData: BookFormData
-    setFormData: React.Dispatch<React.SetStateAction<BookFormData>>
+    mutate: UseMutateFunction<Book, Error, BookFormData, unknown>
+    isLoading?: boolean
+    book?: Book
 }
 
 export function CardBookFormContent({
-    mutation: { isPending, mutate }, formData, setFormData
+    isLoading, mutate, book
 }: CardBookFormContentProps) {
+
+    const [formData, setFormData] = useState<BookFormData>({
+        title: book?.title || "",
+        author: book?.author || "",
+        isbn: book?.isbn || "",
+        published_date: book?.published_date?.split("T")[0] || new Date().toISOString().split("T")[0],
+        available: book?.available ?? true,
+        book_type: book?.book_type || "printed", // Default to printed
+        pages: book?.pages || undefined,
+        duration: book?.duration || undefined,
+        file_format: book?.file_format || undefined,
+    })
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value, type, checked } = e.target;
@@ -169,8 +181,8 @@ export function CardBookFormContent({
                 </div>
             </CardContent>
             <CardFooter>
-                <Button type="submit" disabled={isPending}>
-                    {isPending ? (
+                <Button type="submit" disabled={isLoading}>
+                    {isLoading ? (
                         <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                             Processing...

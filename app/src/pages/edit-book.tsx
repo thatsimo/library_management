@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import { useAuth } from "../contexts/auth-context"
 import { getBook, updateBook } from "../services/api"
 import type { BookFormData } from "../services/api"
@@ -26,35 +25,7 @@ export function EditBookPage() {
     enabled: !!token && !!bookId,
   })
 
-  const [formData, setFormData] = useState<BookFormData>({
-    title: book?.title || "",
-    author: book?.author || "",
-    isbn: book?.isbn || "",
-    published_date: book?.published_date?.split("T")[0] || new Date().toISOString().split("T")[0],
-    available: book?.available ?? true,
-    book_type: book?.book_type || "printed", // Default to printed
-    pages: book?.pages || undefined,
-    duration: book?.duration || undefined,
-    file_format: book?.file_format || undefined,
-  })
-
-  useState(() => {
-    if (book) {
-      setFormData({
-        title: book.title,
-        author: book.author,
-        isbn: book.isbn,
-        published_date: book.published_date.split("T")[0],
-        available: book.available,
-        book_type: book.book_type || "printed",
-        pages: book.pages || undefined,
-        duration: book.duration || undefined,
-        file_format: book.file_format || undefined,
-      })
-    }
-  })
-
-  const updateMutation = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: (data: BookFormData) => updateBook(token!, bookId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["book", bookId] })
@@ -98,9 +69,9 @@ export function EditBookPage() {
                 <CardTitle>Edit Book</CardTitle>
               </CardHeader>
               <CardBookFormContent
-                mutation={updateMutation}
-                formData={formData}
-                setFormData={setFormData}
+                mutate={mutate}
+                isLoading={isPending}
+                book={book}
               />
             </Card>
           </div>
